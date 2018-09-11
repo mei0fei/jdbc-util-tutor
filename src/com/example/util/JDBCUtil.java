@@ -63,9 +63,9 @@ public class JDBCUtil {
 		try {
 			//先调用this.getPreparedStatement(sql);这个方法，真正生成ppst
 			this.getPreparedStatement(sql,params);
-			conn.setAutoCommit(false);
+			conn.setAutoCommit(false);//开启事务
 			i =ppst.executeUpdate();
-			conn.commit();
+			conn.commit();//提交事务
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -173,7 +173,8 @@ public class JDBCUtil {
 				//这里完成给一个对象的所有属性赋值
 				for(int i=1;i<=cnt;i++){
 					String propertyName = rsmd.getColumnName(i).toLowerCase();
-					PropertyDescriptor pd = PropertyUtil.getPropertyDescriptor(clazz, propertyName);
+					//PropertyDescriptor pd = PropertyUtil.getPropertyDescriptor(clazz, propertyName);
+					PropertyDescriptor pd = new PropertyDescriptor(propertyName,clazz);
 					Method setMd = pd.getWriteMethod();
 					//PropertyUtil.setProperty(oNew, propertyName, rs.getObject(propertyName));
 					setMd.invoke(oNew, rs.getObject(propertyName));//读取rs的该列的值调用set方法赋值

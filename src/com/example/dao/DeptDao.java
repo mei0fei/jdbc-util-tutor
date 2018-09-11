@@ -69,10 +69,11 @@ public class DeptDao {
 	
 	public static void main(String[] args){
 		DeptDao dao = new DeptDao();
-		dao.insert();
-		dao.delete();
-		dao.insert();
-		dao.delete();
+		dao.getAllDept2();
+		//dao.insert();
+		//dao.delete();
+		//dao.insert();
+		//dao.delete();
 		
 	}
 	
