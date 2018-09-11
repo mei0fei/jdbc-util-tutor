@@ -63,7 +63,10 @@ public class JDBCUtil {
 		try {
 			//先调用this.getPreparedStatement(sql);这个方法，真正生成ppst
 			this.getPreparedStatement(sql,params);
+			conn.setAutoCommit(false);
 			i =ppst.executeUpdate();
+			conn.commit();
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
