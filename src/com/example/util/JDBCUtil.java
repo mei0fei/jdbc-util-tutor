@@ -5,6 +5,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -23,7 +24,8 @@ public class JDBCUtil {
 	private static final String url = "jdbc:oracle:thin:@localhost:1521:orcl";	
 	private static final String user = "scott";
 	private static final String password = "tiger";
-	PreparedStatement ppst = null;	
+	PreparedStatement ppst = null;
+	CallableStatement cstm = null;
 	Connection conn = null;
 	ResultSet rs = null;
 	//实现连接，创建出ppst
@@ -44,6 +46,26 @@ public class JDBCUtil {
 			ex.printStackTrace();
 		}		
 	}
+	
+	//实现连接，创建出cstm
+	public CallableStatement getCallableStatement(String call){		
+		try{
+			//1、加载驱动包
+			Class.forName(driverName);
+			//2、开启连接		
+			conn = DriverManager.getConnection(url, user, password);
+			cstm = conn.prepareCall(call);
+			
+			return cstm;
+		}catch(Exception ex){
+			System.out.println("数据库处理失败");
+			ex.printStackTrace();
+		}	
+		return null;
+	}
+	
+	
+	
 	//执行查询--select
 	public  ResultSet getResultSet(String sql,Object...params){			
 		try {
@@ -136,6 +158,14 @@ public class JDBCUtil {
 		 if(ppst!=null){
 			 try {
 				ppst.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		 }
+		 if(cstm!=null){
+			 try {
+				cstm.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

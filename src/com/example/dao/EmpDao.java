@@ -1,5 +1,8 @@
 package com.example.dao;
 
+import java.sql.CallableStatement;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,6 +25,29 @@ public class EmpDao {
 		
 	}
 	
+	//pagenum: 页码 从1开始  ， pagerows： 每页的记录数 5
+	public Object[][] selectByPage(int pagenum, int pagerows ){
+		
+		JDBCUtil util = new JDBCUtil();
+		
+		int minnum = pagenum*pagerows - pagerows;
+		int maxnum = pagenum*pagerows ;
+		String sql = " select e1.* from	"
+				+ " (select rownum as rn , emp.* from emp where rownum<="+ maxnum +")  e1 "
+				+ " where e1.rn>"+minnum ;
+		
+		System.out.println(sql);
+		
+		Object[][] objs = util.getQueryResult(sql);
+		
+		for(int i=0;i<objs.length;i++){
+			System.out.println(Arrays.toString(objs[i]));
+		}
+		
+		return objs;
+		
+	}
+	
 	public List<Emp> select2(){
 		
 		JDBCUtil util = new JDBCUtil();
@@ -30,8 +56,6 @@ public class EmpDao {
 		for(Emp d : emps){
 			System.out.println(d);
 		}
-		
-		
 		
 		return emps;
 		
@@ -77,9 +101,36 @@ public class EmpDao {
 		return n;
 	}
 	
+	public void callProc() {
+		JDBCUtil util = null;
+		try{
+			String call = "{ call proc_show(?, ?) }";
+			util = new JDBCUtil();
+			int mgr= 0 ;
+		
+			CallableStatement cstm =  util.getCallableStatement(call);
+			cstm.setInt(1, 7900);
+			cstm.registerOutParameter(2, Types.NUMERIC);
+			
+			cstm.executeQuery();//返回一个结果集。
+			mgr= cstm.getInt(2);
+			System.out.println("mgr = " + mgr);	
+			
+
+		}catch (SQLException e){
+		
+			e.printStackTrace();
+			e.getMessage();
+			
+	
+		}finally{
+			util.doClose();
+		}
+	}
+	
 	public static void main(String[] args){
 		EmpDao dao = new EmpDao();
-		dao.select2();
+		dao.callProc();
 	}
 	
 }
